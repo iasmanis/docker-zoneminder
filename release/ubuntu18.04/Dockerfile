@@ -13,7 +13,12 @@ RUN apt update \
     && echo "# Install zoneminder" \
     && DEBIAN_FRONTEND=noninteractive apt install --assume-yes zoneminder \
     && a2enconf zoneminder \
-    && a2enmod rewrite cgi
+    && a2enmod rewrite cgi \
+    && rm -r /var/lib/apt/lists/*
+
+HEALTHCHECK --interval=15s --timeout=10s --retries=3 \
+    CMD ["curl", "--fail", "http://localhost/zm/api/host/getVersion.json"] || exit 1
+
 
 # Setup Volumes
 VOLUME /var/cache/zoneminder/events /var/cache/zoneminder/images /var/lib/mysql /var/log/zm

@@ -14,4 +14,21 @@ docker run -d -t -p 1080:80 \
     zoneminderhq/zoneminder:latest-ubuntu18.04
 ```
 
+```bash
+docker service create \
+    --name zoneminder \
+    --limit-cpu=1 \
+    --limit-memory=2400Mb \
+    -e TZ='Europe/Rome' \
+    -e ZM_DB_USER='myuser' \
+    -e ZM_DB_PASS='mypass' \
+    -e ZM_DB_NAME='zm' \
+    -e ZM_DB_HOST='mysql' \
+    --mount "type=bind,source=/opt/shared/zoneminder/config,target=/etc/zm/conf.d" \
+    --mount "type=bind,source=/opt/shared/zoneminder/logs,target=/var/log/zm" \
+    --mount "type=bind,source=/var/lib/zoneminder/events,target=/var/cache/zoneminder/events" \
+    --mount "type=tmpfs,target=/dev/shm,tmpfs-size=1936870912,tmpfs-mode=0777" \
+    ingemars/zoneminder:ubuntu18.04-1.34.4
+```
+
 Once the container is running you will need to browse to http://hostname:port/zm to access the Zoneminder interface.

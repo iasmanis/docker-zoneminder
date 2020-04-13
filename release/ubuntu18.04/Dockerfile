@@ -2,6 +2,7 @@ FROM ubuntu:18.04
 MAINTAINER Peter Gallagher
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV ZM_VERSION=1.34.9-bionic1
 
 RUN echo "# Update base packages" \
     && apt update \
@@ -13,7 +14,7 @@ RUN echo "# Update base packages" \
     && echo deb http://ppa.launchpad.net/iconnor/zoneminder-1.34/ubuntu bionic main > /etc/apt/sources.list.d/zoneminder.list \
     && apt update \
     && echo "# Install zoneminder" \
-    && apt install --assume-yes zoneminder=1.34.4-bionic1     \
+    && apt install --assume-yes zoneminder=$ZM_VERSION \
     && a2enconf zoneminder \
     && a2enmod rewrite cgi \
     && rm -r /var/lib/apt/lists/*

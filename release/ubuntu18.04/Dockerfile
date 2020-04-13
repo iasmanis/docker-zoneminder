@@ -1,8 +1,9 @@
 FROM ubuntu:18.04
 MAINTAINER Peter Gallagher
 
-# Update base packages
-RUN apt update \
+
+RUN echo "# Update base packages" \
+    apt update \
     && apt upgrade --assume-yes \ 
     && echo "# Install pre-reqs" \
     && apt install --assume-yes --no-install-recommends gnupg curl \

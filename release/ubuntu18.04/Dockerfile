@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 MAINTAINER Peter Gallagher
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.34.9-bionic1
+ENV ZM_VERSION=1.34.10-bionic2
 
 RUN echo "# Update base packages" \
     && apt update \

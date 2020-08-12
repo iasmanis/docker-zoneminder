@@ -396,8 +396,15 @@ do
     [ -e "$APACHE_PIDFILE" ] || die "apache pid file $APACHE_PIDFILE missing"
     [ -e "$ZM_PIDFILE" ] || die "zoneminder pid file $ZM_PIDFILE missing"
 
-    [ kill -0 $(cat "$APACHE_PIDFILE") &> /dev/null ] || die "apache process not running"
-    [ kill -0 $(cat "$ZM_PIDFILE") &> /dev/null ] || die "zoneminder process not running"
+    kill -0 $(cat "$APACHE_PIDFILE") &> /dev/null
+    if [ $? -ne 0 ]; then
+        die "apache process not running"
+    fi
+
+    kill -0 $(cat "$ZM_PIDFILE") &> /dev/null
+    if [ $? -ne 0 ]; then
+        die "zoneminder process not running"
+    fi
 
     sleep 5
 done

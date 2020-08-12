@@ -1,41 +1,10 @@
 # zmdockerfiles
-This repository contains Docker files used in various ways for the ZoneMinder project.
 
 ## Usage
 
-**Note:** Detailled usage instructions for the development and release Dockerfiles are contained within each Dockerfile.
+**Note:** Detailed usage instructions for the development and release Dockerfiles are contained within each Dockerfile.
 
-Docker images are published to Docker Hub and can be pulled directly from there e.g.
-
-### CentOS
-
-Using external folders:
-```bash
-docker run -d -t -p 1080:443 \
-    -v /disk/zoneminder/events:/var/lib/zoneminder/events \
-    -v /disk/zoneminder/mysql:/var/lib/mysql \
-    -v /disk/zoneminder/logs:/var/log/zm \
-    --name zoneminder \
-    zoneminderhq/zoneminder:latest-el7
-```
-
-Using external folders and external MySQL database:
-
-```bash
-docker run -d -t -p 1080:443 \
-    -e TZ='America/Los_Angeles' \
-    -e ZM_DB_USER='zmuser' \
-    -e ZM_DB_PASS='zmpassword' \
-    -e ZM_DB_NAME='zoneminder_database' \
-    -e ZM_DB_HOST='my_central_db_server' \
-    -v /disk/zoneminder/events:/var/lib/zoneminder/events \
-    -v /disk/zoneminder/logs:/var/log/zm \
-    --shm-size="512m" \
-    --name zoneminder \
-    zoneminderhq/zoneminder:latest-el7
-```
-
-### Ubuntu
+The Docker images are available from the Docker Hub e.g.
 
 ```bash
 docker run -d -t -p 1080:80 \
@@ -46,8 +15,27 @@ docker run -d -t -p 1080:80 \
     -v ~/zoneminder/logs:/var/log/zm \
     --shm-size="512m" \
     --name zoneminder \
-    zoneminderhq/zoneminder:latest-ubuntu18.04
+    ingemars/zoneminder:ubuntu18.04-<tag>
 ```
+
+```bash
+docker service create \
+    --name zoneminder \
+    --limit-cpu=1 \
+    --limit-memory=2400Mb \
+    -e TZ='Europe/Rome' \
+    -e ZM_DB_USER='myuser' \
+    -e ZM_DB_PASS='mypass' \
+    -e ZM_DB_NAME='zm' \
+    -e ZM_DB_HOST='mysql' \
+    --mount "type=bind,source=/opt/shared/zoneminder/config,target=/etc/zm/conf.d" \
+    --mount "type=bind,source=/opt/shared/zoneminder/logs,target=/var/log/zm" \
+    --mount "type=bind,source=/var/lib/zoneminder/events,target=/var/cache/zoneminder/events" \
+    --mount "type=tmpfs,target=/dev/shm,tmpfs-size=1936870912,tmpfs-mode=0777" \
+    ingemars/zoneminder:ubuntu18.04-<tag>
+```
+
+Once the container is running you will need to browse to http://hostname:port/zm to access the Zoneminder interface.
 
 ## Contributions
 

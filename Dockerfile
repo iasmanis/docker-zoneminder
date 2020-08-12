@@ -1,5 +1,6 @@
 FROM ubuntu:18.04
-MAINTAINER Peter Gallagher
+
+LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ZM_VERSION=1.34.18-bionic1

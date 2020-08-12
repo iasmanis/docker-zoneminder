@@ -10,6 +10,9 @@
 # SUBROUTINES #
 ###############
 
+APACHE_PIDFILE=/var/run/apache2/apache2.pid
+ZM_PIDFILE=/var/run/zm/zm.pid
+
 # Find ciritical files and perform sanity checks
 initialize () {
 
@@ -248,7 +251,7 @@ chk_remote_mysql () {
             echo "   ...found."
         else
             echo "   ...failed!"
-            return
+            die "remote database server check failed"
         fi
         echo -n " * Looking for existing remote database"
         if [ "$(zm_db_exists)" -eq "1" ]; then
@@ -284,6 +287,7 @@ start_http () {
         echo "   ...done."
     else
         echo "   ...failed!"
+        die "apache failed to start"
     fi
 }
 
@@ -296,6 +300,7 @@ start_zoneminder () {
         echo "   ...done."
     else
         echo "   ...failed!"
+        die "zoneminder failed to start"
     fi
 }
 
@@ -305,6 +310,13 @@ cleanup () {
     $HTTPBIN -k stop > /dev/null 2>&1
     sleep 5
     exit 0
+}
+
+
+die () {
+    echo " !!! $1"
+    cleanup
+    exit 1
 }
 
 ################
@@ -355,10 +367,17 @@ start_http
 # Start ZoneMinder
 start_zoneminder
 
+sleep 30
+
 # Stay in a loop to keep the container running
 while :
 do
-    # perhaps output some stuff here or check apache & mysql are still running
-    sleep 2
+    [ -e "$APACHE_PIDFILE" ] || die "apache pid file $APACHE_PIDFILE missing"
+    [ -e "$ZM_PIDFILE" ] || die "zoneminder pid file $ZM_PIDFILE missing"
+
+    [ $(kill -0 "$APACHE_PIDFILE" &> /dev/null) ] || die "apache process not running"
+    [ $(kill -0 "$ZM_PIDFILE" &> /dev/null) ] || die "zoneminder process not running"
+
+    sleep 5
 done
 

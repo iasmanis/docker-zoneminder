@@ -300,7 +300,7 @@ start_http () {
 
 update_zoneminder () {
     echo -n " * ZoneMinder DB schema update"
-    $ZMUPDATE -nointeractive
+    $ZMUPDATE -nointeractive &> /dev/null
     RETVAL=$?
     if [ "$RETVAL" = "0" ]; then
         echo "   ...done."

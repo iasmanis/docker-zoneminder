@@ -52,6 +52,13 @@ initialize () {
         fi
     done
 
+    for FILE in "/usr/bin/zmupdate.pl" "/usr/local/bin/zmupdate.pl"; do
+        if [ -f $FILE ]; then
+            ZMUPDATE=$FILE
+            break
+        fi
+    done
+
     # Look in common places for the zoneminder startup perl script - zmpkg.pl
     for FILE in "/usr/bin/zmpkg.pl" "/usr/local/bin/zmpkg.pl"; do
         if [ -f $FILE ]; then
@@ -291,6 +298,18 @@ start_http () {
     fi
 }
 
+update_zoneminder () {
+    echo -n " * ZoneMinder DB schema update"
+    $ZMUPDATE -nointeractive
+    RETVAL=$?
+    if [ "$RETVAL" = "0" ]; then
+        echo "   ...done."
+    else
+        echo "   ...failed!"
+        die "zoneminder update failed"
+    fi
+}
+
 # ZoneMinder service management
 start_zoneminder () {
     echo -n " * Starting ZoneMinder video surveillance recorder"
@@ -363,6 +382,8 @@ trap cleanup SIGTERM
 
 # Start Apache
 start_http
+
+update_zoneminder
 
 # Start ZoneMinder
 start_zoneminder

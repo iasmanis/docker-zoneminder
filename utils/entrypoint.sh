@@ -393,10 +393,10 @@ sleep 30
 # Stay in a loop to keep the container running
 while :
 do
-    [ -e "$APACHE_PIDFILE" ] || die "apache pid file $APACHE_PIDFILE missing"
+    # [ -e "$APACHE_PIDFILE" ] || die "apache pid file $APACHE_PIDFILE missing"
     [ -e "$ZM_PIDFILE" ] || die "zoneminder pid file $ZM_PIDFILE missing"
 
-    [ $(kill -0 "$APACHE_PIDFILE" &> /dev/null) ] || die "apache process not running"
+    # [ $(kill -0 "$APACHE_PIDFILE" &> /dev/null) ] || die "apache process not running"
     [ $(kill -0 "$ZM_PIDFILE" &> /dev/null) ] || die "zoneminder process not running"
 
     sleep 5

@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.34.21-bionic1
+ENV ZM_VERSION=1.34.22-bionic1
 
 RUN echo "# Update base packages" \
     && apt update \

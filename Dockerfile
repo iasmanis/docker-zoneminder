@@ -3,8 +3,10 @@ FROM ubuntu:18.04
 LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.34.24-bionic1
+ENV ZM_VERSION=1.34.25-bionic1
 
+# Source for packages 
+# https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-1.34
 RUN echo "# Update base packages" \
     && apt update \
     && apt upgrade --assume-yes \

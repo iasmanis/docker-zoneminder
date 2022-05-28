@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.36.15-focal1
+ENV ZM_VERSION=1.36.16-focal1
 
 # Source for packages
 # https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-1.36

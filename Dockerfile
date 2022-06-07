@@ -20,7 +20,7 @@ RUN echo "# Update base packages" \
     && apt install --assume-yes zoneminder=$ZM_VERSION \
     && a2enconf zoneminder \
     && a2enmod rewrite cgi \
-    && sed -i -e "s/error_reporting =.*/error_reporting = E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED/g" /etc/php/7.4/apache2/php.ini \
+    && sed -i -e "s/error_reporting =.*/error_reporting = E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED/g" $PHPINI \
     && rm -r /var/lib/apt/lists/*
 
 HEALTHCHECK --interval=15s --timeout=10s --retries=3 \

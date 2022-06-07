@@ -4,6 +4,7 @@ LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ZM_VERSION=1.36.19-focal1
+ENV PHPINI=/etc/php/7.4/apache2/php.ini
 
 # Source for packages
 # https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-1.36

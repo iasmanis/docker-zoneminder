@@ -22,7 +22,6 @@ RUN echo "# Update base packages" \
     && a2enconf zoneminder \
     && a2enmod rewrite cgi \
     && sed -i -e "s/error_reporting =.*/error_reporting = E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED/g" $PHPINI \
-    && sed -i -e "s/;intl.default_locale =/intl.default_locale = en_US/g" $PHPINI \
     && rm -r /var/lib/apt/lists/*
 
 HEALTHCHECK --interval=15s --timeout=10s --retries=3 \

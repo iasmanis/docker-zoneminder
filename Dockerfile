@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.36.19-focal1
+ENV ZM_VERSION=1.37.16~20220603143059-focal
 
 # Source for packages
 # https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-1.36
@@ -14,7 +14,7 @@ RUN echo "# Update base packages" \
     && apt install --assume-yes --no-install-recommends gnupg curl \
     && echo "# Configure Zoneminder PPA" \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABE4C7F993453843F0AEB8154D0BF748776FFB04 \
-    && echo deb http://ppa.launchpad.net/iconnor/zoneminder-1.36/ubuntu focal main > /etc/apt/sources.list.d/zoneminder.list \
+    && echo deb http://ppa.launchpad.net/iconnor/zoneminder-master/ubuntu focal main > /etc/apt/sources.list.d/zoneminder.list \
     && apt update \
     && echo "# Install zoneminder" \
     && apt install --assume-yes zoneminder=$ZM_VERSION \

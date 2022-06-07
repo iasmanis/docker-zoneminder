@@ -25,4 +25,4 @@ jobs:
         with:
           push: true
           secrets: GIT_AUTH_TOKEN=${{ secrets.ACCESS_TOKEN }}
-          tags: ingemars/zoneminder:${{ steps.get_version.outputs.VERSION }}
+          tags: ingemars/zoneminder:beta-${{ steps.get_version.outputs.VERSION }}

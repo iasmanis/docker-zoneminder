@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.36.34-bionic1
+ENV ZM_VERSION=1.36.35-bionic1
 ENV PHPINI=/etc/php/7.2/apache2/php.ini
 
 # Source for packages

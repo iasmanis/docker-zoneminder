@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.36.35-focal1
+ENV ZM_VERSION=1.36.36-focal1
 ENV PHPINI=/etc/php/7.4/apache2/php.ini
 
 # Source for packages

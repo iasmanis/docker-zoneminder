@@ -10,7 +10,6 @@ ENV PHPINI=/etc/php/7.4/apache2/php.ini
 # https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-1.36
 RUN echo "# Update base packages" \
     && apt update \
-    && apt upgrade --assume-yes \
     && echo "# Install pre-reqs" \
     && apt install --assume-yes --no-install-recommends gnupg curl \
     && echo "# Configure Zoneminder PPA" \

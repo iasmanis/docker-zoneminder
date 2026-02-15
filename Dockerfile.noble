@@ -12,7 +12,7 @@ RUN echo "# Update base packages" \
     && apt update \
     && apt upgrade --assume-yes \
     && echo "# Install pre-reqs" \
-    && apt install --assume-yes --no-install-recommends gnupg curl software-properties-common \
+    && apt install --assume-yes --no-install-recommends gnupg curl software-properties-common file \
     && echo "# Configure Zoneminder PPA" \
     && add-apt-repository -y ppa:iconnor/zoneminder-1.38 \
     && apt update \

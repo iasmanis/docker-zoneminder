@@ -1,4 +1,4 @@
-name: Docker Image CI (bionic)
+name: Docker Image CI (noble)
 
 on:
   push:
@@ -26,4 +26,4 @@ jobs:
           push: true
           file: Dockerfile.bionic
           secrets: GIT_AUTH_TOKEN=${{ secrets.ACCESS_TOKEN }}
-          tags: ingemars/zoneminder:${{ steps.get_version.outputs.VERSION }}-bionic
+          tags: ingemars/zoneminder:${{ steps.get_version.outputs.VERSION }}-noble

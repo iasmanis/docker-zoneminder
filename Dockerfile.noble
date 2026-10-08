@@ -19,7 +19,9 @@ RUN echo "# Update base packages" \
     && echo "# Install zoneminder" \
     && apt install --assume-yes zoneminder \
     && a2enconf zoneminder \
-    && a2enmod rewrite cgi \
+    && a2enmod rewrite cgi http2 \
+    && echo "Protocols h2 h2c http/1.1" > /etc/apache2/conf-available/http2.conf \
+    && a2enconf http2 \
     && sed -i -e "s/error_reporting =.*/error_reporting = E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED/g" $PHPINI \
     && rm -r /var/lib/apt/lists/*
 

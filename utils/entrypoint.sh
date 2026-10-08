@@ -123,6 +123,26 @@ initialize () {
     fi
 }
 
+# Mounted volumes (e.g. /var/log/zm) come up owned by root, which prevents the
+# web server and zm daemons from writing their log files. Reset ownership here.
+fix_permissions () {
+    # On Debian/Ubuntu these live in conf.d rather than zm.conf itself
+    local conffiles="$ZMCONF $(ls ${ZMCONF%/*}/conf.d/*.conf 2>/dev/null)"
+    local webuser=$(cat $conffiles 2>/dev/null | sed -n "s/^ZM_WEB_USER=//p" | tail -n 1)
+    local webgroup=$(cat $conffiles 2>/dev/null | sed -n "s/^ZM_WEB_GROUP=//p" | tail -n 1)
+    [ -z "$webuser" ] && webuser="www-data"
+    [ -z "$webgroup" ] && webgroup="$webuser"
+
+    echo -n " * Setting ownership of ZoneMinder directories to ${webuser}:${webgroup}"
+    for DIR in /var/log/zm /var/lib/zoneminder /var/cache/zoneminder /var/cache/zoneminder/events /var/cache/zoneminder/images /var/cache/zoneminder/temp /var/run/zm /var/tmp/zm; do
+        if [ -d "$DIR" ]; then
+            chown -R ${webuser}:${webgroup} "$DIR"
+            chmod -R u+rwX,g+rwX "$DIR"
+        fi
+    done
+    echo "   ...done."
+}
+
 # Usage: get_mysql_option SECTION VARNAME DEFAULT
 # result is returned in $result
 # We use my_print_defaults which prints all options from multiple files,
@@ -379,6 +399,8 @@ fi
 
 # Ensure we shutdown our services cleanly when we are told to stop
 trap cleanup SIGTERM
+
+fix_permissions
 
 # Start Apache
 start_http

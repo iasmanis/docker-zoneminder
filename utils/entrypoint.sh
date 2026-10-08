@@ -328,6 +328,18 @@ update_zoneminder () {
         echo "   ...failed!"
         die "zoneminder update failed"
     fi
+
+    # Repopulates the Config table so it matches what the binaries expect,
+    # otherwise zmc reports "Config mismatch, expected N items, read M".
+    echo -n " * ZoneMinder config reload"
+    $ZMUPDATE -f &> /dev/null
+    RETVAL=$?
+    if [ "$RETVAL" = "0" ]; then
+        echo "   ...done."
+    else
+        echo "   ...failed!"
+        die "zoneminder config reload failed"
+    fi
 }
 
 # ZoneMinder service management

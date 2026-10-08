@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  zoneminder:
+    image: your-registry/zoneminder:noble
+    environment:
+      - TZ=UTC
+      - ZM_DB_HOST=db
+      - ZM_DB_NAME=zm
+      - ZM_DB_USER=zmuser
+      - ZM_DB_PASS=zmpass
+    ports:
+      - "8080:80"
+    volumes:
+      # Persistent data
+      - zm_events:/var/cache/zoneminder/events
+      - zm_images:/var/cache/zoneminder/images
+      - zm_logs:/var/log/zm
+      # Shared memory fix for Swarm (shm_size is ignored in swarm mode)
+      - type: tmpfs
+        target: /dev/shm
+        tmpfs:
+          size: 2147483648 # 2GB, adjust as needed
+    networks:
+      - zm_net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      # Placement constraints might be needed if using local volumes
+      placement:
+        constraints:
+          - node.role == manager
+    # Security options to fix seccomp/clone3 issue on newer Ubuntu
+    # Note: Support for security_opt in Swarm depends on Docker version.
+    security_opt:
+      - seccomp:unconfined
+    # Capabilities for ZM functionality
+    cap_add:
+      - SYS_NICE
+      - SYS_ADMIN # May be needed for some operations
+
+  db:
+    image: mysql/mysql-server:8.0
+    environment:
+      - MYSQL_DATABASE=zm
+      - MYSQL_USER=zmuser
+      - MYSQL_PASSWORD=zmpass
+      - MYSQL_ROOT_PASSWORD=mysqlrootpass
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - zm_net
+    deploy:
+      replicas: 1
+
+networks:
+  zm_net:
+
+volumes:
+  zm_events:
+  zm_images:
+  zm_logs:
+  db_data:

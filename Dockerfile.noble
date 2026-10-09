@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 LABEL maintainer="Ingemars Asmanis"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZM_VERSION=1.38.0
+ENV ZM_VERSION=1.38.6
 ENV PHPINI=/etc/php/8.3/apache2/php.ini
 
 # Source for packages
@@ -12,14 +12,16 @@ RUN echo "# Update base packages" \
     && apt update \
     && apt upgrade --assume-yes \
     && echo "# Install pre-reqs" \
-    && apt install --assume-yes --no-install-recommends gnupg curl software-properties-common \
+    && apt install --assume-yes --no-install-recommends gnupg curl software-properties-common file \
     && echo "# Configure Zoneminder PPA" \
     && add-apt-repository -y ppa:iconnor/zoneminder-1.38 \
     && apt update \
     && echo "# Install zoneminder" \
     && apt install --assume-yes zoneminder \
     && a2enconf zoneminder \
-    && a2enmod rewrite cgi \
+    && a2enmod rewrite cgi http2 \
+    && echo "Protocols h2 h2c http/1.1" > /etc/apache2/conf-available/http2.conf \
+    && a2enconf http2 \
     && sed -i -e "s/error_reporting =.*/error_reporting = E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED/g" $PHPINI \
     && rm -r /var/lib/apt/lists/*
 

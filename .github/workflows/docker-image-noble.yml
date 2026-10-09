@@ -24,6 +24,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          file: Dockerfile.bionic
+          file: Dockerfile.noble
           secrets: GIT_AUTH_TOKEN=${{ secrets.ACCESS_TOKEN }}
           tags: ingemars/zoneminder:${{ steps.get_version.outputs.VERSION }}-noble

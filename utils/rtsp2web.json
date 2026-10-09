@@ -1,17 +1,19 @@
 {
-  "server": {
-    "debug": false,
-    "log_level": "info",
-    "http_demo": false,
-    "http_debug": false,
-    "http_auth": false,
-    "http_port": ":8083",
-    "http_dir": "/opt/rtsp2web/web",
-    "ice_servers": ["stun:stun.l.google.com:19302"],
-    "rtsp_port": ":5541"
-  },
-  "streams": {},
-  "channel_defaults": {
-    "on_demand": true
-  }
+    "server": {
+        "debug": false,
+        "log_level": "info",
+        "http_demo": false,
+        "http_debug": false,
+        "http_auth": false,
+        "http_port": ":8083",
+        "http_dir": "/opt/rtsp2web/web",
+        "ice_servers": [
+            "stun:stun.l.google.com:19302"
+        ],
+        "rtsp_port": ":5541"
+    },
+    "streams": {},
+    "channel_defaults": {
+        "on_demand": true
+    }
 }

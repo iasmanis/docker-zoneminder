@@ -9,13 +9,17 @@ services:
       - ZM_DB_NAME=zm
       - ZM_DB_USER=zmuser
       - ZM_DB_PASS=zmpass
+      # Must be reachable from the browser, not just from the container
+      - ZM_RTSP2WEB_PATH=http://localhost:8083
     ports:
       - "8080:80"
+      - "8083:8083"
     volumes:
       # Persistent data
       - zm_events:/var/cache/zoneminder/events
       - zm_images:/var/cache/zoneminder/images
       - zm_logs:/var/log/zm
+      - zm_rtsp2web:/var/lib/rtsp2web
       # Shared memory fix for Swarm (shm_size is ignored in swarm mode)
       - type: tmpfs
         target: /dev/shm
@@ -61,4 +65,5 @@ volumes:
   zm_events:
   zm_images:
   zm_logs:
+  zm_rtsp2web:
   db_data:

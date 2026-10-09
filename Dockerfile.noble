@@ -1,3 +1,14 @@
+# ZoneMinder calls this streaming server "RTSP2Web"; upstream publishes no binaries.
+FROM golang:1.27-alpine AS rtsp2web
+
+ARG RTSP2WEB_VERSION=v2.4.3
+
+RUN apk add --no-cache git \
+    && git clone --depth 1 --branch ${RTSP2WEB_VERSION} https://github.com/deepch/RTSPtoWeb /src
+WORKDIR /src
+RUN CGO_ENABLED=0 go build -o rtsp-to-web
+
+
 FROM ubuntu:24.04
 
 LABEL maintainer="Ingemars Asmanis"
@@ -25,15 +36,20 @@ RUN echo "# Update base packages" \
     && sed -i -e "s/error_reporting =.*/error_reporting = E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED/g" $PHPINI \
     && rm -r /var/lib/apt/lists/*
 
+# Install the RTSP2Web streaming server
+COPY --from=rtsp2web /src/rtsp-to-web /opt/rtsp2web/rtsp-to-web
+COPY --from=rtsp2web /src/web /opt/rtsp2web/web
+COPY utils/rtsp2web.json /usr/local/share/rtsp2web/config.json
+
 HEALTHCHECK --interval=15s --timeout=10s --retries=3 \
     CMD ["curl", "--fail", "http://localhost/zm/api/host/getVersion.json"] || exit 1
 
 
 # Setup Volumes
-VOLUME /var/cache/zoneminder/events /var/cache/zoneminder/images /var/lib/mysql /var/log/zm
+VOLUME /var/cache/zoneminder/events /var/cache/zoneminder/images /var/lib/mysql /var/log/zm /var/lib/rtsp2web
 
-# Expose http port
-EXPOSE 80
+# Expose http and RTSP2Web ports
+EXPOSE 80 8083
 
 # Configure entrypoint
 COPY utils/entrypoint.sh /usr/local/bin/

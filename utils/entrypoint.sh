@@ -12,6 +12,9 @@
 
 APACHE_PIDFILE=/var/run/apache2/apache2.pid
 ZM_PIDFILE=/var/run/zm/zm.pid
+RTSP2WEB_BIN=/opt/rtsp2web/rtsp-to-web
+RTSP2WEB_SEED=/usr/local/share/rtsp2web/config.json
+RTSP2WEB_CONFIG=/var/lib/rtsp2web/config.json
 
 # Find ciritical files and perform sanity checks
 initialize () {
@@ -342,6 +345,37 @@ update_zoneminder () {
     fi
 }
 
+# RTSP2Web service management. ZoneMinder registers monitors with it over the
+# API, so it must be up before zmc starts.
+start_rtsp2web () {
+    if [ ! -x "$RTSP2WEB_BIN" ]; then
+        return 0
+    fi
+
+    if [ ! -f "$RTSP2WEB_CONFIG" ]; then
+        install -m 644 -D "$RTSP2WEB_SEED" "$RTSP2WEB_CONFIG"
+    fi
+
+    echo -n " * Starting RTSP2Web streaming server"
+    "$RTSP2WEB_BIN" --config="$RTSP2WEB_CONFIG" >> /var/log/zm/rtsp2web.log 2>&1 &
+    rtsp2webpid=$!
+    echo "   ...done."
+}
+
+# Write a value into the ZoneMinder Config table. zmupdate.pl must have run first.
+zm_set_config () {
+    local name="$1"
+    # Single quotes are the statement delimiter below, so double them up
+    local value=$(printf '%s' "$2" | sed "s/'/''/g")
+    local sql="UPDATE Config SET Value='${value}' WHERE Name='${name}';"
+
+    if [ "$remoteDB" -eq "1" ]; then
+        mysql -u${ZM_DB_USER} -p${ZM_DB_PASS} -h${ZM_DB_HOST} ${ZM_DB_NAME} -e "$sql"
+    else
+        mysql -u root zm -e "$sql"
+    fi
+}
+
 # ZoneMinder service management
 start_zoneminder () {
     echo -n " * Starting ZoneMinder video surveillance recorder"
@@ -357,6 +391,7 @@ start_zoneminder () {
 
 cleanup () {
     echo " * SIGTERM received. Cleaning up before exiting..."
+    kill $rtsp2webpid > /dev/null 2>&1
     kill $mysqlpid > /dev/null 2>&1
     $HTTPBIN -k stop > /dev/null 2>&1
     sleep 5
@@ -419,6 +454,17 @@ start_http
 
 update_zoneminder
 
+if [ -n "$ZM_RTSP2WEB_PATH" ]; then
+    echo -n " * Pointing ZoneMinder at RTSP2Web on $ZM_RTSP2WEB_PATH"
+    if zm_set_config ZM_RTSP2WEB_PATH "$ZM_RTSP2WEB_PATH" > /dev/null 2>&1; then
+        echo "   ...done."
+    else
+        echo "   ...failed!"
+    fi
+fi
+
+start_rtsp2web
+
 # Start ZoneMinder
 start_zoneminder
 
@@ -438,6 +484,13 @@ do
     kill -0 $(cat "$ZM_PIDFILE") &> /dev/null
     if [ $? -ne 0 ]; then
         die "zoneminder process not running"
+    fi
+
+    if [ -n "$rtsp2webpid" ]; then
+        kill -0 $rtsp2webpid &> /dev/null
+        if [ $? -ne 0 ]; then
+            die "rtsp2web process not running"
+        fi
     fi
 
     sleep 5
